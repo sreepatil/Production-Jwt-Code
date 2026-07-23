@@ -2,6 +2,7 @@ package com.example.jwtToken15.exception;
 
 import com.example.jwtToken15.dto.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -19,6 +21,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUserAlreadyExists(
             UserAlreadyExistsException exception,
             HttpServletRequest request){
+
+        log.warn("Request conflict. path={}, message={}",
+                request.getRequestURI(),
+                exception.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse(
                 request.getRequestURI(),
@@ -44,6 +50,10 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .orElse("Validation failed");
 
+        log.debug("Request validation failed. path{}, message{}",
+                request.getRequestURI(),
+                exception.getMessage());
+
         ErrorResponse errorResponse = new ErrorResponse(
                 request.getRequestURI(),
                 HttpStatus.BAD_REQUEST.value(),
@@ -60,6 +70,9 @@ public class GlobalExceptionHandler {
             BadCredentialsException exception,
             HttpServletRequest request ){
 
+//        log.warn("Authentication failed due to invalid credentials. path={}",
+//                request.getRequestURI()); ---> coz this done in service impl so here no need to do again.
+
         ErrorResponse errorResponse = new ErrorResponse(
                 request.getRequestURI(),
                 HttpStatus.UNAUTHORIZED.value(),
@@ -74,6 +87,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGenericException(
             Exception exception,
             HttpServletRequest request ){
+
+        log.error("Unexpected error while processing request path={}",
+                request.getRequestURI(),
+                exception);
 
         ErrorResponse errorResponse = new ErrorResponse(
                 request.getRequestURI(),

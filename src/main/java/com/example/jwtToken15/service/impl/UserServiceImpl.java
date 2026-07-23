@@ -10,6 +10,7 @@ import com.example.jwtToken15.exception.UserAlreadyExistsException;
 import com.example.jwtToken15.service.UserService;
 import com.example.jwtToken15.jwt.JwtService;
 import com.example.jwtToken15.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -38,7 +40,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse register(RegisterRequest request) {
+
+        log.debug("Processing registration request for username: {}",
+                request.username());
+
         if (userRepository.existsByUsername(request.username())){
+
+            log.warn("Registration rejected because username already exists : {}",
+                    request.username());
+
             throw new UserAlreadyExistsException("Username " + request.username() + " Already Exists");
         }
 
@@ -60,6 +70,9 @@ public class UserServiceImpl implements UserService {
 //                savedUser.getUsername(),
 //                savedUser.getRole());
 
+        log.info("User registered Successfully: id={}",
+                savedUser.getId());
+
         return new UserResponse(savedUser.getId(),
                 savedUser.getUsername(),
                 savedUser.getRole().name());
@@ -67,8 +80,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponse login(AuthRequest request) {
+
+        log.debug("Processing login request for username: {}",
+                request.username());
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
+
+        log.info("User Authenticated successfully: {}",
+                request.username());
 
         User user = userRepository.findByUsername(request.username()).orElseThrow(() ->
                 new UsernameNotFoundException("User not found"));
