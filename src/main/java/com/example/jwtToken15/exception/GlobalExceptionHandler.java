@@ -22,9 +22,9 @@ public class GlobalExceptionHandler {
             UserAlreadyExistsException exception,
             HttpServletRequest request){
 
-        log.warn("Request conflict. path={}, message={}",
-                request.getRequestURI(),
-                exception.getMessage());
+//        log.warn("Request conflict. path={}, message={}",
+//                request.getRequestURI(),
+//                exception.getMessage()); ---> coz this done in service impl so here no need to do again.
 
         ErrorResponse errorResponse = new ErrorResponse(
                 request.getRequestURI(),
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
 
         log.debug("Request validation failed. path{}, message{}",
                 request.getRequestURI(),
-                exception.getMessage());
+                message);
 
         ErrorResponse errorResponse = new ErrorResponse(
                 request.getRequestURI(),
@@ -70,8 +70,8 @@ public class GlobalExceptionHandler {
             BadCredentialsException exception,
             HttpServletRequest request ){
 
-//        log.warn("Authentication failed due to invalid credentials. path={}",
-//                request.getRequestURI()); ---> coz this done in service impl so here no need to do again.
+        log.warn("Authentication failed due to invalid credentials. path={}",
+                request.getRequestURI());
 
         ErrorResponse errorResponse = new ErrorResponse(
                 request.getRequestURI(),
