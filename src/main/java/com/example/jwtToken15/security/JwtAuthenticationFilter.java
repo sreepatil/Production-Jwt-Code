@@ -28,6 +28,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().startsWith("/api/public/");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -64,9 +68,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }catch (JwtException | IllegalArgumentException exception){
             SecurityContextHolder.clearContext();
 
-            log.warn("JWT authentication failed. path={}, exceptionType={}",
-                    request.getRequestURI(),
-                    exception.getClass().getSimpleName());
+            log.warn("JWT authentication failed. path={}",
+                    request.getRequestURI());
         }
 
         filterChain.doFilter(request,response);
