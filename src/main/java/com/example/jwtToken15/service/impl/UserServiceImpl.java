@@ -7,6 +7,7 @@ import com.example.jwtToken15.dto.response.UserResponse;
 import com.example.jwtToken15.entity.User;
 import com.example.jwtToken15.enums.Role;
 import com.example.jwtToken15.exception.UserAlreadyExistsException;
+import com.example.jwtToken15.security.UserPrincipal;
 import com.example.jwtToken15.service.UserService;
 import com.example.jwtToken15.jwt.JwtService;
 import com.example.jwtToken15.repository.UserRepository;
@@ -14,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -84,16 +84,18 @@ public class UserServiceImpl implements UserService {
         log.debug("Processing login request for username: {}",
                 request.username());
 
-        authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
+
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
 
         log.info("User Authenticated successfully: {}",
                 request.username());
 
-        User user = userRepository.findByUsername(request.username()).orElseThrow(() ->
-                new UsernameNotFoundException("User not found"));
+//        User user = userRepository.findByUsername(request.username()).orElseThrow(() ->
+//                new UsernameNotFoundException("User not found"));
 
-        String token = jwtService.generateToken(user.getUsername(), user.getRole());
+        String token = jwtService.generateToken(principal.getUsername(), principal.getRole());
 
         return new AuthResponse(token, "Bearer");
     }

@@ -1,6 +1,7 @@
 package com.example.jwtToken15.security;
 
 import com.example.jwtToken15.entity.User;
+import com.example.jwtToken15.enums.Role;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,19 +16,24 @@ public class UserPrincipal implements UserDetails {
     public UserPrincipal(User user){
         this.user = user;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
     @Override
-    public @Nullable String getPassword() {
+    public String getPassword() {
         return user.getPassword();
     }
 
     @Override
     public String getUsername() {
         return user.getUsername();
+    }
+
+    public Role getRole(){
+        return user.getRole();
     }
 
     @Override
