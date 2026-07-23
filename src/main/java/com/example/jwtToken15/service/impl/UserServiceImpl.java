@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
 //                savedUser.getUsername(),
 //                savedUser.getRole());
 
-        log.info("User registered Successfully: id={}",
+        log.info("User registered successfully: id={}",
                 savedUser.getId());
 
         return new UserResponse(savedUser.getId(),
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
         log.debug("Processing login request for username: {}",
                 request.username());
 
-        Authentication authentication = authenticationManager.authenticate(
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
         log.info("User Authenticated successfully: {}",
