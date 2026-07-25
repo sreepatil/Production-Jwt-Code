@@ -2,6 +2,7 @@ package com.example.jwtToken15.service.impl;
 
 import com.example.jwtToken15.dto.request.AuthRequest;
 import com.example.jwtToken15.dto.request.RegisterRequest;
+import com.example.jwtToken15.dto.request.UpdatetUserRequest;
 import com.example.jwtToken15.dto.response.AuthResponse;
 import com.example.jwtToken15.dto.response.UserResponse;
 import com.example.jwtToken15.entity.User;
@@ -12,6 +13,7 @@ import com.example.jwtToken15.service.UserService;
 import com.example.jwtToken15.jwt.JwtService;
 import com.example.jwtToken15.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -98,5 +100,19 @@ public class UserServiceImpl implements UserService {
         String token = jwtService.generateToken(principal.getUsername(), principal.getRole());
 
         return new AuthResponse(token, "Bearer");
+    }
+
+    @Override
+    public ResponseEntity<?> updatedUser(UpdatetUserRequest request, Authentication authentication) {
+        String currentUsername = authentication.getName();
+
+        User user = userRepository.findByUsername(currentUsername).orElseThrow(() ->
+                new RuntimeException("User not found"));
+
+        user.setUsername(request.getUsername());
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok("User Updated Successfully");
     }
 }
