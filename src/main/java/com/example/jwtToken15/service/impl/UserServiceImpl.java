@@ -19,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -41,6 +42,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @Transactional
     public UserResponse register(RegisterRequest request) {
 
         log.debug("Processing registration request for username: {}",
@@ -66,11 +68,6 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         User savedUser = userRepository.save(user);
-
-
-//        return new UserResponse(savedUser.getId(),
-//                savedUser.getUsername(),
-//                savedUser.getRole());
 
         log.info("User registered successfully: id={}",
                 savedUser.getId());
