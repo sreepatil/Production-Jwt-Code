@@ -99,8 +99,10 @@ public class UserServiceImpl implements UserService {
         return new AuthResponse(token, "Bearer");
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> updatedUser(UpdatetUserRequest request, Authentication authentication) {
+
         String currentUsername = authentication.getName();
 
         User user = userRepository.findByUsername(currentUsername).orElseThrow(() ->
@@ -108,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
         user.setUsername(request.getUsername());
 
-        userRepository.save(user);
+//        userRepository.save(user); //coz version added in entity
 
         return ResponseEntity.ok("User Updated Successfully");
     }
